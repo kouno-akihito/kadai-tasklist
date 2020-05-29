@@ -35,7 +35,6 @@ public class IndexServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         EntityManager em = DBUtil.createEntityManager();
 
-        // 開くページ数を取得（デフォルトは1ページ目）
         int page = 1;
         try {
             page = Integer.parseInt(request.getParameter("page"));
@@ -54,14 +53,16 @@ public class IndexServlet extends HttpServlet {
         em.close();
 
         request.setAttribute("tasks", tasks);
-        request.setAttribute("tasks_count", tasks_count);     // 全件数
-        request.setAttribute("page", page);
+
         // フラッシュメッセージがセッションスコープにセットされていたら
         // リクエストスコープに保存する（セッションスコープからは削除）
         if(request.getSession().getAttribute("flush") != null) {
             request.setAttribute("flush", request.getSession().getAttribute("flush"));
             request.getSession().removeAttribute("flush");
         }
+
+        request.setAttribute("tasks_count", tasks_count);     // 全件数
+        request.setAttribute("page", page);
 
         RequestDispatcher rd = request.getRequestDispatcher("/WEB-INF/views/tasks/index.jsp");
         rd.forward(request, response);
